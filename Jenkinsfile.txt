@@ -8,7 +8,7 @@ pipeline {
             steps {
                 bat """
                 call myenv\\Scripts\\activate
-                pip install -r requirements.txt
+                pip install -r requisitos.txt
                 """
             }
         }
