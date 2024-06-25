@@ -1,5 +1,6 @@
 import sys
 import difflib
+import io
 
 def carregar_perguntas(nome_arquivo):
     perguntas_respostas = {}
@@ -17,6 +18,10 @@ def encontrar_pergunta_similar(perguntas, pergunta_usuario, limiar=0.6):
     return None
 
 if __name__ == "__main__":
+    # Redirecionar saída padrão e erros padrão para utf-8
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
     if len(sys.argv) < 2:
         print("Erro: Nenhuma pergunta fornecida.")
         sys.exit(1)
