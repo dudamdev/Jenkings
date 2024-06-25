@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    stages {
+        stage('Setup') {
+            steps {
+                bat """
+                call myenv\\Scripts\\activate
+                pip install -r requisitos.txt
+                """
+            }
+        }
+        stage('Rodar Testes') {
+            steps {
+                script {
+                    try {
+                        bat """
+                        call myenv\\Scripts\\activate
+                        pytest --maxfail=1 --disable-warnings > pytest_output.txt
+                        """
+                    } catch (Exception e) {
+                        archiveArtifacts artifacts: 'pytest_output.txt'
+                        currentBuild.result = 'FAILURE'
+                        error('Testes falharam, verifique pytest_output.txt para mais detalhes.')
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                bat """
+                call myenv\\Scripts\\activate
+                python deploy_script.py
+                """
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'pytest_output.txt'
+        }
+    }
+}
