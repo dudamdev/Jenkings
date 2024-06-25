@@ -1,11 +1,14 @@
 pipeline {
     agent any
+    environment {
+        PERGUNTA = "Qual é a capital da França?" // Defina a pergunta que deseja passar como parâmetro
+    }
     stages {
         stage('Setup') {
             steps {
                 bat """
                 call myenv\\Scripts\\activate
-                pip install -r requisitos.txt
+                pip install -r requirements.txt
                 """
             }
         }
@@ -25,18 +28,38 @@ pipeline {
                 }
             }
         }
+        stage('Executar Chatbot') {
+            steps {
+                script {
+                    bat """
+                    call myenv\\Scripts\\activate
+                    python chat_bot.py "${env.PERGUNTA}" > chatbot_output.txt
+                    """
+                    // Imprimir a saída do chatbot no console do Jenkins
+                    bat "type chatbot_output.txt"
+                }
+            }
+        }
         stage('Deploy') {
             steps {
-                bat """
-                call myenv\\Scripts\\activate
-                python deploy_script.py
-                """
+                script {
+                    def deployScript = 'deploy_script.py'
+                    if (fileExists(deployScript)) {
+                        bat """
+                        call myenv\\Scripts\\activate
+                        python ${deployScript}
+                        """
+                    } else {
+                        echo "Arquivo ${deployScript} não encontrado. Etapa de deploy ignorada."
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
             }
         }
     }
     post {
         always {
-            archiveArtifacts artifacts: 'pytest_output.txt'
+            archiveArtifacts artifacts: 'pytest_output.txt, chatbot_output.txt'
         }
     }
 }

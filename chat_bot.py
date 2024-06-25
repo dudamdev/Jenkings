@@ -1,3 +1,4 @@
+import sys
 import difflib
 
 def carregar_perguntas(nome_arquivo):
@@ -15,20 +16,19 @@ def encontrar_pergunta_similar(perguntas, pergunta_usuario, limiar=0.6):
         return perguntas_similares[0]
     return None
 
-perguntas_respostas = carregar_perguntas("perguntas.txt")
-print("Perguntas carregadas:")
-for pergunta in perguntas_respostas:
-    print(f"- {pergunta}")
-
-while True:
-    pergunta_usuario = input("\nDigite sua pergunta (ou 'sair' para encerrar): ").strip()
-    if pergunta_usuario.lower() == 'sair':
-        break
-
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Erro: Nenhuma pergunta fornecida.")
+        sys.exit(1)
+    
+    pergunta_usuario = sys.argv[1]
+    perguntas_respostas = carregar_perguntas("perguntas.txt")
     pergunta_similar = encontrar_pergunta_similar(perguntas_respostas, pergunta_usuario)
 
     if pergunta_similar:
         resposta = perguntas_respostas[pergunta_similar]
+        print(f"Pergunta: {pergunta_usuario}")
         print(f"Resposta: {resposta}")
     else:
+        print(f"Pergunta: {pergunta_usuario}")
         print("Desculpe, não encontrei uma resposta para sua pergunta.")
