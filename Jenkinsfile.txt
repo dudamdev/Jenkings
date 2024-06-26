@@ -3,6 +3,10 @@ pipeline {
     environment {
         PERGUNTA = "Qual é a capital da França?" // Defina a pergunta que deseja passar como parâmetro
     }
+    parameters {
+        string(name: 'PERGUNTA', defaultValue: '', description: 'Pergunta a ser processada pelo chatbot')
+    }
+
     stages {
         stage('Setup') {
             steps {
@@ -33,7 +37,7 @@ pipeline {
                 script {
                     bat """
                     call myenv\\Scripts\\activate
-                    python chat_bot.py "${env.PERGUNTA}" > chatbot_output.txt
+                    python chat_bot.py "${PERGUNTA}"
                     """
                     // Imprimir a saída do chatbot no console do Jenkins
                     bat "type chatbot_output.txt"
