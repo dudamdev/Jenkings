@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    environment {
-        PERGUNTA = "Qual é a capital da França?" // Defina a pergunta que deseja passar como parâmetro
-    }
     parameters {
         string(name: 'PERGUNTA', defaultValue: '', description: 'Pergunta a ser processada pelo chatbot')
     }
